@@ -137,20 +137,6 @@ const assistantTemplates = {
     "Overall risk posture is moderate. A beta of 0.94 means the portfolio moves slightly less than the market. Max drawdown of 9.6% indicates controlled downside, while a Sharpe ratio of 1.32 suggests healthy risk-adjusted returns. Stress scenarios show resilience unless tech volatility spikes further."
 };
 
-const auth = document.getElementById("auth");
-const app = document.getElementById("app");
-const loginBtn = document.getElementById("loginBtn");
-const emailInput = document.getElementById("emailInput");
-
-loginBtn.addEventListener("click", () => {
-  if (!emailInput.value) {
-    emailInput.focus();
-    return;
-  }
-  auth.classList.add("hidden");
-  app.classList.remove("hidden");
-});
-
 const navButtons = document.querySelectorAll(".top-nav button");
 const sections = document.querySelectorAll(".section");
 
@@ -180,27 +166,48 @@ const watchlistGrid = document.getElementById("watchlistGrid");
 const trendLine = document.getElementById("trendLine");
 const trendArea = document.getElementById("trendArea");
 const portfolioHealth = document.getElementById("portfolioHealth");
+const performanceTooltip = document.getElementById("performanceTooltip");
+const performanceChart = document.querySelector(".performance-chart");
+
+let currentPerformanceData = null;
 
 const formatCurrency = (value) =>
-  new Intl.NumberFormat("en-US", {
+  new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0
+    currency: "INR",
+    notation: "compact",
+    compactDisplay: "short",
+    maximumFractionDigits: 2
+  }).format(value);
+
+const formatPercent = (value) =>
+  new Intl.NumberFormat("en-IN", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1
   }).format(value);
 
 const buildMetrics = () => {
+  const liquidityRatio = (portfolioData.cashAvailable / portfolioData.totalValue) * 100;
   const metrics = [
     { label: "Total Portfolio Value", value: formatCurrency(portfolioData.totalValue) },
     {
       label: "Today’s Change",
-      value: `${formatCurrency(portfolioData.todayChange)} (${portfolioData.todayChangePct}%)`
+      value: `${formatCurrency(portfolioData.todayChange)} (${formatPercent(
+        portfolioData.todayChangePct
+      )}%)`
     },
-    { label: "Holdings", value: portfolioData.holdings },
     { label: "Cost Basis", value: formatCurrency(portfolioData.costBasis) },
     { label: "Unrealized Gains", value: formatCurrency(portfolioData.unrealizedGains) },
     { label: "Cash Available", value: formatCurrency(portfolioData.cashAvailable) },
     { label: "Buying Power", value: formatCurrency(portfolioData.buyingPower) },
-    { label: "Annual Yield", value: `${portfolioData.annualYield}%` }
+    {
+      label: "Holdings · Yield",
+      value: `${portfolioData.holdings} · ${formatPercent(portfolioData.annualYield)}%`
+    },
+    {
+      label: "Liquidity Ratio",
+      value: `${formatPercent(liquidityRatio)}%`
+    }
   ];
 
   metricsContainer.innerHTML = metrics
@@ -211,44 +218,170 @@ const buildMetrics = () => {
     .join("");
 };
 
-const buildTrend = () => {
-  const values = portfolioData.trend;
+const performanceRanges = {
+  "7D": { points: 7, label: "Last 7 days" },
+  "1M": { points: 30, label: "Last 30 days" },
+  "3M": { points: 90, label: "Last 90 days" },
+  "1Y": { points: 180, label: "Last 12 months" },
+  ALL: { points: 220, label: "All time" }
+};
+
+const buildPerformanceSeries = (range) => {
+  const base = portfolioData.trend;
+  const { points } = performanceRanges[range];
+  const series = [];
+  for (let i = 0; i < points; i += 1) {
+    const ratio = i / (points - 1);
+    const baseIndex = ratio * (base.length - 1);
+    const lower = Math.floor(baseIndex);
+    const upper = Math.ceil(baseIndex);
+    const interp =
+      base[lower] + (base[upper] - base[lower]) * (baseIndex - lower);
+    const seasonal = Math.sin((ratio * Math.PI * 2) / 1.8) * 0.07;
+    const trendShift = ratio * 0.22;
+    series.push(interp + seasonal + trendShift);
+  }
+  return series;
+};
+
+const mapSeriesToPoints = (values) => {
   const max = Math.max(...values);
   const min = Math.min(...values);
-  const points = values.map((value, index) => {
+  return values.map((value, index) => {
     const x = (index / (values.length - 1)) * 600;
     const y = 160 - ((value - min) / (max - min)) * 120 - 20;
     return `${x},${y}`;
   });
-  const linePath = `M ${points.join(" L ")}`;
-  const areaPath = `${linePath} L 600 160 L 0 160 Z`;
-  trendLine.setAttribute("d", linePath);
-  trendArea.setAttribute("d", areaPath);
+};
+
+const buildPerformanceData = (range) => {
+  const series = buildPerformanceSeries(range);
+  const baseValue = portfolioData.totalValue;
+  const values = series.map((value, index) => {
+    const normalized = (value - series[0]) / series[0];
+    return baseValue * (1 + normalized / 5);
+  });
+  const changes = values.map((value, index) =>
+    index === 0 ? 0 : value - values[index - 1]
+  );
+  const dates = Array.from({ length: series.length }, (_, index) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (series.length - 1 - index));
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "2-digit",
+      month: "short"
+    }).format(date);
+  });
+  return { series, values, changes, dates };
+};
+
+const initSummaryAccordion = () => {
+  const triggers = summaryContent.querySelectorAll(".accordion-trigger");
+  triggers.forEach((trigger) => {
+    trigger.addEventListener("click", () => {
+      const item = trigger.closest(".accordion-item");
+      const isActive = item.classList.contains("active");
+      summaryContent
+        .querySelectorAll(".accordion-item")
+        .forEach((panel) => panel.classList.remove("active"));
+      if (!isActive) {
+        item.classList.add("active");
+      }
+    });
+  });
+};
+
+const updateTooltip = (index) => {
+  if (!currentPerformanceData || !performanceTooltip) {
+    return;
+  }
+  const { values, changes, dates } = currentPerformanceData;
+  const safeIndex = Math.max(0, Math.min(values.length - 1, index));
+  const value = values[safeIndex];
+  const change = changes[safeIndex];
+  const previousValue = values[safeIndex === 0 ? 0 : safeIndex - 1];
+  const changePct = previousValue ? (change / previousValue) * 100 : 0;
+  performanceTooltip.querySelector(".tooltip-date").textContent = dates[safeIndex];
+  performanceTooltip.querySelector(".tooltip-value").textContent = formatCurrency(value);
+  performanceTooltip.querySelector(".tooltip-change").textContent = `Change: ${
+    change >= 0 ? "+" : "-"
+  }${formatCurrency(Math.abs(change))} (${formatPercent(changePct || 0)}%)`;
+  performanceTooltip.classList.toggle("negative", change < 0);
 };
 
 const buildSummary = () => {
   const concentration = portfolioData.allocation[0].value;
   const health = concentration > 35 ? "Needs Attention" : "Excellent";
   portfolioHealth.textContent = health;
+  const rebalanceLabel =
+    concentration > 30 ? "Trim Tech +4%" : "Weights on target";
+  const rebalanceDetail =
+    concentration > 30 ? "Tech above band" : "Within guardrails";
+  const ytdDelta =
+    portfolioData.performance["1Y"].gain - portfolioData.performance["1Y"].benchmark;
+
+  const summaryItems = [
+    {
+      title: "Portfolio health",
+      summary: `${portfolioData.allocation.length} core sectors`,
+      detail: "Diversification intact across primary sleeves.",
+      status: health
+    },
+    {
+      title: "Rebalancing",
+      summary: rebalanceDetail,
+      detail: "Adjusting tech weight reduces concentration pressure.",
+      status: concentration > 30 ? "Attention Needed" : "Excellent"
+    },
+    {
+      title: "Risk posture",
+      summary: `Beta ${portfolioData.risk.beta} · Drawdown ${portfolioData.risk.drawdown}%`,
+      detail: "Risk remains within the mandate guardrails.",
+      status: "Moderate"
+    },
+    {
+      title: "YTD performance",
+      summary: `+${portfolioData.performance["1Y"].gain}% vs benchmark`,
+      detail: `Outperformance of +${ytdDelta.toFixed(1)}% alpha vs benchmark.`,
+      status: "Excellent"
+    }
+  ];
 
   summaryContent.innerHTML = `
-    <ul>
-      <li><strong>Portfolio Health:</strong> ${health} — diversified with ${portfolioData.allocation.length} core sectors.</li>
-      <li><strong>Rebalancing:</strong> ${
-        concentration > 30
-          ? "Technology exposure exceeds target by 4%, suggesting a trim to reduce single-theme risk."
-          : "Sector weights remain within target bands; no immediate rebalance required."
-      }</li>
-      <li><strong>Risk Level:</strong> Moderate — beta ${portfolioData.risk.beta} with a controlled drawdown of ${
-    portfolioData.risk.drawdown
-  }%.</li>
-      <li><strong>Performance:</strong> +${
-        portfolioData.performance["1Y"].gain
-      }% YTD, beating benchmark by ${
-    portfolioData.performance["1Y"].gain - portfolioData.performance["1Y"].benchmark
-  }%.</li>
-    </ul>
+    <div class="accordion">
+      ${summaryItems
+        .map(
+          (item, index) => `
+        <div class="accordion-item ${index === 0 ? "active" : ""}">
+          <button class="accordion-trigger" type="button">
+            <span class="summary-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                <circle cx="12" cy="12" r="6" />
+                <path d="M12 9v6M9 12h6" />
+              </svg>
+            </span>
+            <span class="accordion-headline">
+              <strong>${item.title}</strong>
+              <span class="muted">${item.summary}</span>
+            </span>
+            <span class="summary-badge ${
+              item.status === "Excellent"
+                ? "positive"
+                : item.status === "Attention Needed"
+                ? "attention"
+                : ""
+            }">${item.status}</span>
+          </button>
+          <div class="accordion-panel">
+            <span class="muted">${item.detail}</span>
+          </div>
+        </div>
+      `
+        )
+        .join("")}
+    </div>
   `;
+  initSummaryAccordion();
 };
 
 const buildInsights = () => {
@@ -274,9 +407,14 @@ const buildSuggestions = () => {
           <span class="tag">${item.type}</span>
           <div>
             <strong>${item.asset}</strong>
-            <p class="muted">${item.price} · ${item.movement} · ${item.horizon}</p>
+            <div class="suggestion-meta">
+              <span><strong>Price:</strong> ${item.price}</span>
+              <span><strong>Recent 7D:</strong> ${item.movement}</span>
+              <span><strong>Horizon:</strong> ${item.horizon}</span>
+              <span><strong>Risk intent:</strong> ${item.risk}</span>
+            </div>
           </div>
-          <span class="muted">${item.risk} risk</span>
+          <span class="muted">Intent: ${item.type}</span>
         </div>
       `
     )
@@ -293,7 +431,7 @@ const buildAllocation = () => {
     }, [])
     .map((value) => (value / total) * 360);
 
-  const colors = ["#29c37c", "#5fb4ff", "#f1c15b", "#e48cc7", "#7b6dff", "#6ad1c9"];
+  const colors = ["#6f8cc6", "#7a9f8a", "#b08b5c", "#8f7fb6", "#9e6f7e", "#5d7b8a"];
   const segments = gradientStops
     .map((stop, index) => `${colors[index]} 0 ${stop}deg`)
     .join(", ");
@@ -316,6 +454,16 @@ const buildAllocation = () => {
 
 const buildPerformance = (range = "7D") => {
   const data = portfolioData.performance[range];
+  currentPerformanceData = buildPerformanceData(range);
+  const points = mapSeriesToPoints(currentPerformanceData.series);
+  const linePath = `M ${points.join(" L ")}`;
+  const areaPath = `${linePath} L 600 160 L 0 160 Z`;
+  trendLine.setAttribute("d", linePath);
+  trendArea.setAttribute("d", areaPath);
+  trendLine.dataset.range = range;
+  trendLine.dataset.series = JSON.stringify(currentPerformanceData.series);
+  trendArea.dataset.series = JSON.stringify(currentPerformanceData.series);
+
   performanceStats.innerHTML = `
     <div class="detail-row"><span>Portfolio vs Benchmark</span><span>+${data.gain}% vs +${data.benchmark}%</span></div>
     <div class="detail-row"><span>Total gain</span><span>+${data.gain}%</span></div>
@@ -325,6 +473,8 @@ const buildPerformance = (range = "7D") => {
 
   performanceCallout.textContent =
     "Alpha generation remains consistent. Momentum is strongest in quality growth and defensive healthcare positions.";
+
+  updateTooltip(currentPerformanceData.series.length - 1);
 };
 
 const buildRisk = () => {
@@ -366,12 +516,24 @@ const buildRisk = () => {
 };
 
 const buildEvents = () => {
+  const formatEventDate = (date) => {
+    const [month, day] = date.split(" ");
+    return `${day} ${month} 2026`;
+  };
+
   eventsContainer.innerHTML = portfolioData.events
     .map(
       (event) => `
         <div class="event">
           <strong>${event.title}</strong>
-          <span class="muted">${event.date}</span>
+          <span class="muted event-date">
+            <span class="event-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                <path d="M6 4v3M18 4v3M4 9h16M5 11h14v8H5z" />
+              </svg>
+            </span>
+            ${formatEventDate(event.date)}
+          </span>
           <p class="muted">${event.detail}</p>
         </div>
       `
@@ -483,6 +645,32 @@ filterButtons.forEach((button) => {
   });
 });
 
+if (performanceChart) {
+  const performanceSvg = performanceChart.querySelector("svg");
+  performanceSvg.addEventListener("mousemove", (event) => {
+    const rect = performanceSvg.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    if (!currentPerformanceData) {
+      return;
+    }
+    const index = Math.round(
+      (x / rect.width) * (currentPerformanceData.series.length - 1)
+    );
+    updateTooltip(index);
+    performanceTooltip.style.opacity = "1";
+    performanceTooltip.style.left = `${Math.min(
+      Math.max(x, 12),
+      rect.width - 12
+    )}px`;
+  });
+
+  performanceSvg.addEventListener("mouseleave", () => {
+    if (performanceTooltip) {
+      performanceTooltip.style.opacity = "0";
+    }
+  });
+}
+
 const addWatchBtn = document.getElementById("addWatch");
 addWatchBtn.addEventListener("click", () => {
   appendChat("Add Orion Cloud to watchlist", "user");
@@ -490,7 +678,6 @@ addWatchBtn.addEventListener("click", () => {
 });
 
 buildMetrics();
-buildTrend();
 buildSummary();
 buildInsights();
 buildSuggestions();

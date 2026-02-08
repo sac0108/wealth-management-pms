@@ -13,27 +13,7 @@
     />
   </head>
   <body>
-    <div class="auth" id="auth">
-      <div class="auth-card">
-        <div class="brand">
-          <div class="logo">F</div>
-          <div>
-            <h1>Finora</h1>
-            <p>Premium AI wealth management</p>
-          </div>
-        </div>
-        <h2>Sign in</h2>
-        <p class="muted">Use any email to access the prototype.</p>
-        <label>
-          Email address
-          <input type="email" id="emailInput" placeholder="you@finora.com" />
-        </label>
-        <button id="loginBtn" class="primary">Continue to dashboard</button>
-        <p class="hint">No password required · Demo environment</p>
-      </div>
-    </div>
-
-    <div class="app hidden" id="app">
+    <div class="app" id="app">
       <header class="top-bar">
         <div class="brand">
           <div class="logo">F</div>
@@ -46,7 +26,7 @@
           <input type="text" placeholder="Ask AI or search holdings…" />
         </div>
         <nav class="top-nav">
-          <button class="ghost" data-section="dashboard">Smart Dashboard</button>
+          <button class="ghost active" data-section="dashboard">Smart Dashboard</button>
           <button class="ghost" data-section="watchlist">Watchlist</button>
           <button class="ghost" data-section="assistant">Assistant</button>
         </nav>
@@ -59,109 +39,196 @@
 
       <main>
         <section id="dashboard" class="section active">
-          <div class="grid hero">
+          <div class="dashboard-stack">
             <div class="card hero-card">
               <div class="card-header">
-                <div>
-                  <h2>Portfolio Overview</h2>
-                  <p class="muted">Updated moments ago · Base currency USD</p>
+                <div class="card-title">
+                  <span class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                      <path d="M4 18V9m6 9V5m6 13v-7m4 7H3" />
+                    </svg>
+                  </span>
+                  <div>
+                    <h2>Portfolio Overview</h2>
+                    <p class="muted">Updated moments ago · Base currency INR</p>
+                  </div>
                 </div>
                 <div class="pill" id="portfolioHealth">Excellent</div>
               </div>
               <div class="metrics" id="portfolioMetrics"></div>
-              <div class="chart-block">
-                <div>
-                  <h3>7-day performance</h3>
-                  <p class="muted">Net portfolio value trend</p>
-                </div>
-                <svg class="trend" viewBox="0 0 600 160" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient id="trendFill" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="0%" stop-color="#4bd49d" stop-opacity="0.35" />
-                      <stop offset="100%" stop-color="#4bd49d" stop-opacity="0" />
-                    </linearGradient>
-                  </defs>
-                  <path id="trendLine" d="" stroke="#4bd49d" stroke-width="4" fill="none" />
-                  <path id="trendArea" d="" fill="url(#trendFill)" />
-                </svg>
-              </div>
             </div>
 
-            <div class="stack">
-              <div class="card summary-card">
-                <div class="card-header">
+            <div class="card summary-card">
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                      <path d="M4 7h16M4 12h16M4 17h10" />
+                    </svg>
+                  </span>
                   <div>
                     <h3>Finora Summary</h3>
-                    <p class="muted">AI narrative from your latest data</p>
+                    <p class="muted">AI intelligence distilled for quick review</p>
                   </div>
-                  <button class="link" id="analysisBtn">View Detailed Analysis</button>
                 </div>
-                <div id="summaryContent"></div>
+                <button class="link" id="analysisBtn">View Detailed Analysis</button>
               </div>
+              <div id="summaryContent"></div>
+            </div>
+
+            <div class="grid insights-suggestions">
               <div class="card insights-card">
                 <div class="card-header">
-                  <div>
-                    <h3>Finora Insights</h3>
-                    <p class="muted">AI-generated portfolio alerts</p>
+                  <div class="card-title">
+                    <span class="card-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                        <path d="M12 3l9 4-9 4-9-4 9-4z" />
+                        <path d="M3 11l9 4 9-4" />
+                        <path d="M3 15l9 4 9-4" />
+                      </svg>
+                    </span>
+                    <div>
+                      <h3>Finora Insights</h3>
+                      <p class="muted">AI-generated portfolio alerts</p>
+                    </div>
                   </div>
                 </div>
                 <div class="insights" id="insights"></div>
               </div>
-            </div>
-          </div>
-
-          <div class="grid suggestions">
-            <div class="card">
-              <div class="card-header">
-                <h3>Finora Suggestions</h3>
-                <p class="muted">Decision support, not execution</p>
+              <div class="card suggestions-card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <span class="card-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                        <path d="M5 7h14M5 12h9M5 17h6" />
+                        <path d="M16 12l3 3 3-3" />
+                      </svg>
+                    </span>
+                    <div>
+                      <h3>Finora Suggestions</h3>
+                      <p class="muted">Decision support, not execution</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="suggestion-list" id="suggestions"></div>
               </div>
-              <div class="suggestion-list" id="suggestions"></div>
-            </div>
-          </div>
-
-          <div class="grid analytics">
-            <div class="card">
-              <div class="card-header">
-                <h3>Asset Allocation</h3>
-                <p class="muted">Sector exposure and diversification</p>
-              </div>
-              <div class="allocation">
-                <div class="donut" id="allocationDonut"></div>
-                <div class="allocation-details" id="allocationDetails"></div>
-              </div>
-              <div class="callout" id="allocationCallout"></div>
             </div>
 
-            <div class="card">
-              <div class="card-header">
-                <h3>Performance</h3>
-                <div class="filters" id="performanceFilters">
-                  <button class="filter active" data-range="7D">7D</button>
-                  <button class="filter" data-range="1M">1M</button>
-                  <button class="filter" data-range="3M">3M</button>
-                  <button class="filter" data-range="1Y">1Y</button>
-                  <button class="filter" data-range="ALL">ALL</button>
+            <div class="analytics-section">
+              <div class="section-header">
+                <div class="card-title">
+                  <span class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                      <path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" />
+                    </svg>
+                  </span>
+                  <div>
+                    <h3>Deep Analytics</h3>
+                    <p class="muted">Portfolio composition, performance, and forward signals</p>
+                  </div>
                 </div>
               </div>
-              <div class="performance" id="performanceStats"></div>
-              <div class="callout" id="performanceCallout"></div>
-            </div>
+              <div class="grid analytics">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">
+                      <span class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                          <path d="M12 12V3a9 9 0 1 1-9 9h9z" />
+                          <path d="M12 12h9" />
+                        </svg>
+                      </span>
+                      <div>
+                        <h3>Asset Allocation</h3>
+                        <p class="muted">Sector exposure and diversification</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="allocation">
+                    <div class="donut" id="allocationDonut"></div>
+                    <div class="allocation-details" id="allocationDetails"></div>
+                  </div>
+                  <div class="callout" id="allocationCallout"></div>
+                </div>
 
-            <div class="card">
-              <div class="card-header">
-                <h3>Risk Analysis</h3>
-                <p class="muted">Interpretation of portfolio risk metrics</p>
-              </div>
-              <div class="risk" id="riskMetrics"></div>
-            </div>
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">
+                      <span class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                          <path d="M4 16l5-5 4 3 7-7" />
+                          <path d="M4 20h16" />
+                        </svg>
+                      </span>
+                      <div>
+                        <h3>Performance</h3>
+                        <p class="muted">Returns vs benchmark and trend line</p>
+                      </div>
+                    </div>
+                    <div class="filters" id="performanceFilters">
+                      <button class="filter active" data-range="7D">7D</button>
+                      <button class="filter" data-range="1M">1M</button>
+                      <button class="filter" data-range="3M">3M</button>
+                      <button class="filter" data-range="1Y">1Y</button>
+                      <button class="filter" data-range="ALL">ALL</button>
+                    </div>
+                  </div>
+                  <div class="chart-block performance-chart">
+                    <div class="chart-tooltip" id="performanceTooltip">
+                      <span class="tooltip-date">Date</span>
+                      <strong class="tooltip-value">₹0</strong>
+                      <span class="tooltip-change">Change: +₹0 (0%)</span>
+                    </div>
+                    <svg class="trend" viewBox="0 0 600 160" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="trendFill" x1="0" x2="0" y1="0" y2="1">
+                          <stop offset="0%" stop-color="#c8a25a" stop-opacity="0.28" />
+                          <stop offset="100%" stop-color="#c8a25a" stop-opacity="0" />
+                        </linearGradient>
+                      </defs>
+                      <path id="trendLine" d="" stroke="#c8a25a" stroke-width="3.2" fill="none" />
+                      <path id="trendArea" d="" fill="url(#trendFill)" />
+                    </svg>
+                  </div>
+                  <div class="performance" id="performanceStats"></div>
+                  <div class="callout" id="performanceCallout"></div>
+                </div>
 
-            <div class="card">
-              <div class="card-header">
-                <h3>Upcoming Events</h3>
-                <p class="muted">Earnings, dividends, and macro catalysts</p>
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">
+                      <span class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                          <path d="M12 3l9 4v6c0 4.4-3 8.4-9 8.4S3 17.4 3 13V7l9-4z" />
+                        </svg>
+                      </span>
+                      <div>
+                        <h3>Risk Analysis</h3>
+                        <p class="muted">Interpretation of portfolio risk metrics</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="risk" id="riskMetrics"></div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">
+                      <span class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                          <path d="M6 4v3M18 4v3M4 9h16M5 11h14v8H5z" />
+                        </svg>
+                      </span>
+                      <div>
+                        <h3>Upcoming Events</h3>
+                        <p class="muted">Earnings, dividends, and macro catalysts</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="events" id="events"></div>
+                  <button class="secondary calendar-btn">View Calendar</button>
+                </div>
               </div>
-              <div class="events" id="events"></div>
             </div>
           </div>
         </section>
