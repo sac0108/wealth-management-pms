@@ -6,7 +6,6 @@ const portfolioData = {
   unrealizedGains: 3460000,
   cashAvailable: 1850000,
   buyingPower: 3700000,
-  annualYield: 3.8,
   holdings: 14,
   concentrationTop3: 42,
   trend: [2.22, 2.27, 2.24, 2.31, 2.36, 2.41, 2.48],
@@ -156,7 +155,7 @@ const suggestionsData = [
     price: "₹1,790",
     movement: "-0.4%",
     horizon: "3-6M",
-    risk: "Balanced"
+    risk: "Moderate"
   }
 ];
 
@@ -264,11 +263,11 @@ const buildMetrics = () => {
       label: "Today’s Change",
       value: `${formatCurrency(portfolioData.todayChange)} (${portfolioData.todayChangePct}%)`
     },
-    { label: "Holdings", value: portfolioData.holdings },
+    { label: "Holdings Count", value: portfolioData.holdings },
     { label: "Cost Basis", value: formatCurrency(portfolioData.costBasis) },
     { label: "Unrealized Gains", value: formatCurrency(portfolioData.unrealizedGains) },
     { label: "Cash Available", value: formatCurrency(portfolioData.cashAvailable) },
-    { label: "Annual Yield", value: `${portfolioData.annualYield}%` },
+    { label: "Buying Power", value: formatCurrency(portfolioData.buyingPower) },
     {
       label: "Top 3 Concentration",
       value: `${portfolioData.concentrationTop3}%`
@@ -293,6 +292,7 @@ const buildSummary = () => {
     concentration > 30 ? "Tech above band" : "Within guardrails";
   const ytdDelta =
     portfolioData.performance["1Y"].gain - portfolioData.performance["1Y"].benchmark;
+  const riskLevel = "Moderate";
 
   const statusClass = health === "Excellent" ? "positive" : "attention";
   summaryContent.innerHTML = `
@@ -308,8 +308,8 @@ const buildSummary = () => {
             <strong>+${ytdDelta.toFixed(1)}%</strong>
           </div>
           <div class="overview-item">
-            <span class="muted">Top 3 concentration</span>
-            <strong>${portfolioData.concentrationTop3}%</strong>
+            <span class="muted">Risk level</span>
+            <strong>${riskLevel}</strong>
           </div>
         </div>
         <span class="accordion-indicator" aria-hidden="true">
@@ -319,37 +319,41 @@ const buildSummary = () => {
         </span>
       </summary>
       <div class="summary-detail">
-        <div class="summary-row">
-          <div class="summary-icon">◎</div>
-          <div class="summary-text">
-            <span class="summary-label">Key holdings</span>
-            <span class="summary-value">Reliance Industries · HDFC Bank · TCS</span>
+        <div class="summary-section">
+          <div class="summary-section-title">
+            <span class="summary-icon">◎</span>
+            <span>Health explanation</span>
+            <span class="summary-badge ${statusClass}">${health}</span>
           </div>
-          <span class="summary-badge ${statusClass}">${health}</span>
+          <ul class="summary-list">
+            <li><span class="summary-bullet-icon">◆</span><span>Core anchors: Reliance Industries · HDFC Bank · TCS</span></li>
+            <li><span class="summary-bullet-icon">◆</span><span>Liquidity remains above target at ${formatCurrency(portfolioData.cashAvailable)}</span></li>
+            <li><span class="summary-bullet-icon">◆</span><span>Top 3 concentration held at ${portfolioData.concentrationTop3}%</span></li>
+          </ul>
         </div>
-        <div class="summary-row">
-          <div class="summary-icon">↔︎</div>
-          <div class="summary-text">
-            <span class="summary-label">Rebalancing</span>
-            <span class="summary-value">${rebalanceDetail}</span>
+        <div class="summary-section">
+          <div class="summary-section-title">
+            <span class="summary-icon">↔︎</span>
+            <span>Rebalancing insight</span>
+            <span class="summary-badge ${rebalanceStatus === "Needs Attention" ? "attention" : "positive"}">${rebalanceStatus}</span>
           </div>
-          <span class="summary-badge ${rebalanceStatus === "Needs Attention" ? "attention" : "positive"}">${rebalanceStatus}</span>
+          <ul class="summary-list">
+            <li><span class="summary-bullet-icon">◆</span><span>Technology tilt flagged: ${rebalanceDetail}</span></li>
+            <li><span class="summary-bullet-icon">◆</span><span>Suggested trim: 2-3% from top tech winners</span></li>
+            <li><span class="summary-bullet-icon">◆</span><span>Rebalance window: next 14 trading sessions</span></li>
+          </ul>
         </div>
-        <div class="summary-row">
-          <div class="summary-icon">◐</div>
-          <div class="summary-text">
-            <span class="summary-label">Risk posture</span>
-            <span class="summary-value">XIRR ${portfolioData.risk.xirr}% · Max drawdown ${Math.abs(portfolioData.risk.maxDrawdown)}%</span>
+        <div class="summary-section">
+          <div class="summary-section-title">
+            <span class="summary-icon">◐</span>
+            <span>Risk interpretation</span>
+            <span class="summary-badge">${riskLevel}</span>
           </div>
-          <span class="summary-badge">Moderate</span>
-        </div>
-        <div class="summary-row">
-          <div class="summary-icon">▲</div>
-          <div class="summary-text">
-            <span class="summary-label">YTD performance</span>
-            <span class="summary-value">+${portfolioData.performance["1Y"].gain}% vs benchmark</span>
-          </div>
-          <span class="summary-badge positive">Excellent</span>
+          <ul class="summary-list">
+            <li><span class="summary-bullet-icon">◆</span><span>XIRR ${portfolioData.risk.xirr}% with max drawdown ${Math.abs(portfolioData.risk.maxDrawdown)}%</span></li>
+            <li><span class="summary-bullet-icon">◆</span><span>Volatility contained at ${portfolioData.risk.volatility}%</span></li>
+            <li><span class="summary-bullet-icon">◆</span><span>YTD performance +${portfolioData.performance["1Y"].gain}% vs benchmark</span></li>
+          </ul>
         </div>
       </div>
     </details>
@@ -381,12 +385,12 @@ const buildSuggestions = () => {
             <strong>${item.asset}</strong>
             <div class="suggestion-meta">
               <span><strong>Price:</strong> ${item.price}</span>
-              <span><strong>Recent 7D:</strong> ${item.movement}</span>
-              <span><strong>Horizon:</strong> ${item.horizon}</span>
+              <span><strong>Recent 7D %:</strong> ${item.movement}</span>
+              <span><strong>Holding horizon:</strong> ${item.horizon}</span>
               <span><strong>Risk intent:</strong> ${item.risk}</span>
             </div>
           </div>
-          <span class="muted">Intent: ${item.type}</span>
+          <span class="muted">Intent badge: ${item.type}</span>
         </div>
       `
     )
@@ -403,7 +407,7 @@ const buildAllocation = () => {
     }, [])
     .map((value) => (value / total) * 360);
 
-  const colors = ["#4f6b7a", "#6e7f8a", "#8a6f52", "#5f7366", "#79627e", "#6b7a6a"];
+  const colors = ["#22354f", "#4e6a85", "#c7a35d", "#8a93a3", "#5a6c7a", "#b8b1a6"];
   const segments = gradientStops
     .map((stop, index) => `${colors[index]} 0 ${stop}deg`)
     .join(", ");
@@ -421,7 +425,7 @@ const buildAllocation = () => {
     .join("");
 
   allocationCallout.textContent =
-    "Diversification score: 8.4/10. Large-cap anchors like Reliance Industries and HDFC Bank keep balance while mid-cap IT adds growth.";
+    "Interpretation: Diversification score 8.4/10. Large-cap anchors keep balance while selective mid-cap IT adds growth.";
 };
 
 const buildPerformance = (range = "7D") => {
@@ -468,7 +472,7 @@ const buildPerformanceChart = (range = "7D") => {
   performancePoints.innerHTML = points
     .map(
       (point) =>
-        `<circle cx="${point.x}" cy="${point.y}" r="3" fill="#3a9c74" data-date="${point.date}" data-value="${point.value}" />`
+        `<circle cx="${point.x}" cy="${point.y}" r="3" fill="#c7a35d" data-date="${point.date}" data-value="${point.value}" />`
     )
     .join("");
 
@@ -476,11 +480,12 @@ const buildPerformanceChart = (range = "7D") => {
     const previousIndex = points.findIndex((item) => item.date === point.date) - 1;
     const prevValue = previousIndex >= 0 ? points[previousIndex].value : point.value;
     const change = point.value - prevValue;
+    const changePct = prevValue ? (change / prevValue) * 100 : 0;
     const changeLabel = `${change >= 0 ? "+" : "-"}${formatCurrency(Math.abs(change))}`;
     performanceTooltip.innerHTML = `
       <div>${formatDate(point.date)}</div>
       <div><strong>${formatCurrency(point.value)}</strong></div>
-      <div class="muted">Δ ${changeLabel}</div>
+      <div class="muted">Daily change: ${changeLabel} (${changePct >= 0 ? "+" : ""}${changePct.toFixed(2)}%)</div>
     `;
     const rect = performanceChart.getBoundingClientRect();
     const x = clientX - rect.left;
@@ -509,32 +514,47 @@ const buildRisk = () => {
     {
       label: "XIRR",
       value: `${risk.xirr}%`,
-      explanation: "Shows SIP and irregular cash-flow returns in one number."
+      tooltip: {
+        title: "XIRR explains the return on irregular cash flows.",
+        example: "Example: A SIP growing to ₹1.2 Cr shows a 16.8% XIRR."
+      }
     },
     {
       label: "IRR",
       value: `${risk.irr}%`,
-      explanation: "Portfolio-level internal return across all holdings."
+      tooltip: {
+        title: "IRR shows the overall return rate for the portfolio.",
+        example: "Example: If ₹1 Cr becomes ₹1.14 Cr, IRR is ~14%."
+      }
     },
     {
       label: "Max Drawdown",
       value: `${risk.maxDrawdown}%`,
-      explanation: "Worst peak-to-trough dip seen in the period."
+      tooltip: {
+        title: "Max drawdown is the biggest fall from peak to trough.",
+        example: "Example: A ₹2.5 Cr peak dropping to ₹2.29 Cr is -8.4%."
+      }
     },
     {
       label: "Sharpe Ratio",
       value: risk.sharpe,
-      explanation: "Shows how efficiently returns compensate for risk."
+      tooltip: {
+        title: "Sharpe Ratio shows return earned for risk taken.",
+        example: "Example: 1.2 means good risk-adjusted performance."
+      }
     },
     {
       label: "Volatility (Std Dev)",
       value: `${risk.volatility}%`,
-      explanation: "Measures typical month-to-month return swings."
+      tooltip: {
+        title: "Volatility shows how much returns swing over time.",
+        example: "Example: 12.6% means moderate month-to-month movement."
+      }
     },
     {
       label: "Alpha vs NIFTY 50",
       value: `+${risk.alpha}%`,
-      explanation: "Excess return delivered above the benchmark."
+      tooltip: null
     }
   ];
 
@@ -544,7 +564,14 @@ const buildRisk = () => {
         <div class="risk-item">
           <strong>${item.label}</strong>
           <p>${item.value}</p>
-          <p class="muted">${item.explanation}</p>
+          ${
+            item.tooltip
+              ? `<div class="risk-tooltip">
+                  <div>${item.tooltip.title}</div>
+                  <div class="muted">${item.tooltip.example}</div>
+                </div>`
+              : `<p class="muted">Excess return delivered above the benchmark.</p>`
+          }
         </div>
       `
     )
@@ -589,6 +616,11 @@ const buildWatchlist = () => {
       (item) => `
         <div class="watch-card">
           <div class="live">Live</div>
+          <div class="watch-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+              <path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z" />
+            </svg>
+          </div>
           <strong>${item.name}</strong>
           <p>${item.price} <span class="muted">${item.change}</span></p>
           <div class="detail-row" style="border-bottom: none;">
