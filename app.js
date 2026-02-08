@@ -137,20 +137,6 @@ const assistantTemplates = {
     "Overall risk posture is moderate. A beta of 0.94 means the portfolio moves slightly less than the market. Max drawdown of 9.6% indicates controlled downside, while a Sharpe ratio of 1.32 suggests healthy risk-adjusted returns. Stress scenarios show resilience unless tech volatility spikes further."
 };
 
-const auth = document.getElementById("auth");
-const app = document.getElementById("app");
-const loginBtn = document.getElementById("loginBtn");
-const emailInput = document.getElementById("emailInput");
-
-loginBtn.addEventListener("click", () => {
-  if (!emailInput.value) {
-    emailInput.focus();
-    return;
-  }
-  auth.classList.add("hidden");
-  app.classList.remove("hidden");
-});
-
 const navButtons = document.querySelectorAll(".top-nav button");
 const sections = document.querySelectorAll(".section");
 
@@ -230,24 +216,48 @@ const buildSummary = () => {
   const concentration = portfolioData.allocation[0].value;
   const health = concentration > 35 ? "Needs Attention" : "Excellent";
   portfolioHealth.textContent = health;
+  const rebalanceLabel =
+    concentration > 30 ? "Trim Tech +4%" : "Weights on target";
+  const rebalanceDetail =
+    concentration > 30 ? "Tech above band" : "Within guardrails";
+  const ytdDelta =
+    portfolioData.performance["1Y"].gain - portfolioData.performance["1Y"].benchmark;
 
   summaryContent.innerHTML = `
-    <ul>
-      <li><strong>Portfolio Health:</strong> ${health} — diversified with ${portfolioData.allocation.length} core sectors.</li>
-      <li><strong>Rebalancing:</strong> ${
-        concentration > 30
-          ? "Technology exposure exceeds target by 4%, suggesting a trim to reduce single-theme risk."
-          : "Sector weights remain within target bands; no immediate rebalance required."
-      }</li>
-      <li><strong>Risk Level:</strong> Moderate — beta ${portfolioData.risk.beta} with a controlled drawdown of ${
-    portfolioData.risk.drawdown
-  }%.</li>
-      <li><strong>Performance:</strong> +${
-        portfolioData.performance["1Y"].gain
-      }% YTD, beating benchmark by ${
-    portfolioData.performance["1Y"].gain - portfolioData.performance["1Y"].benchmark
-  }%.</li>
-    </ul>
+    <div class="summary-rows">
+      <div class="summary-row">
+        <div class="summary-icon">◎</div>
+        <div class="summary-text">
+          <span class="summary-label">Portfolio health</span>
+          <span class="summary-value">${portfolioData.allocation.length} core sectors</span>
+        </div>
+        <span class="summary-badge ${health === "Excellent" ? "positive" : ""}">${health}</span>
+      </div>
+      <div class="summary-row">
+        <div class="summary-icon">↔︎</div>
+        <div class="summary-text">
+          <span class="summary-label">Rebalancing</span>
+          <span class="summary-value">${rebalanceDetail}</span>
+        </div>
+        <span class="summary-badge">${rebalanceLabel}</span>
+      </div>
+      <div class="summary-row">
+        <div class="summary-icon">◐</div>
+        <div class="summary-text">
+          <span class="summary-label">Risk posture</span>
+          <span class="summary-value">Beta ${portfolioData.risk.beta} · Drawdown ${portfolioData.risk.drawdown}%</span>
+        </div>
+        <span class="summary-badge">Moderate</span>
+      </div>
+      <div class="summary-row">
+        <div class="summary-icon">▲</div>
+        <div class="summary-text">
+          <span class="summary-label">YTD performance</span>
+          <span class="summary-value">+${portfolioData.performance["1Y"].gain}% vs benchmark</span>
+        </div>
+        <span class="summary-badge positive">+${ytdDelta.toFixed(1)}% alpha</span>
+      </div>
+    </div>
   `;
 };
 
@@ -274,9 +284,14 @@ const buildSuggestions = () => {
           <span class="tag">${item.type}</span>
           <div>
             <strong>${item.asset}</strong>
-            <p class="muted">${item.price} · ${item.movement} · ${item.horizon}</p>
+            <div class="suggestion-meta">
+              <span><strong>Price:</strong> ${item.price}</span>
+              <span><strong>Recent 7D:</strong> ${item.movement}</span>
+              <span><strong>Horizon:</strong> ${item.horizon}</span>
+              <span><strong>Risk intent:</strong> ${item.risk}</span>
+            </div>
           </div>
-          <span class="muted">${item.risk} risk</span>
+          <span class="muted">Intent: ${item.type}</span>
         </div>
       `
     )
