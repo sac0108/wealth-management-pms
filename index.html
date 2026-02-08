@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nivara Wealth | Wealth Management Prototype</title>
+    <title>FinTech_WM | Wealth Management Prototype</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,10 +16,16 @@
     <div class="app" id="app">
       <header class="top-bar">
         <div class="brand">
-          <div class="logo">N</div>
+          <div class="logo" aria-hidden="true">
+            <svg viewBox="0 0 48 48" role="img">
+              <path d="M8 10h32v28H8z" fill="none" stroke-width="2.5" />
+              <path d="M16 32l8-16 8 16" stroke-width="3" fill="none" />
+              <circle cx="24" cy="16" r="2.8" />
+            </svg>
+          </div>
           <div class="brand-text">
-            <span class="brand-name">Nivara Wealth</span>
-            <span class="brand-tag">Wealth OS</span>
+            <span class="brand-name">Vedant Wealth Partners</span>
+            <span class="brand-tag">FinTech_WM</span>
           </div>
         </div>
         <div class="search">
@@ -27,7 +33,14 @@
         </div>
         <nav class="top-nav">
           <button class="ghost active" data-section="dashboard">Smart Dashboard</button>
-          <button class="ghost" data-section="watchlist">Watchlist</button>
+          <button class="ghost" data-section="watchlist">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                <path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z" />
+              </svg>
+            </span>
+            Watchlist
+          </button>
           <button class="ghost" data-section="assistant">Assistant</button>
         </nav>
         <div class="icons">
@@ -86,7 +99,7 @@
                       </svg>
                     </span>
                     <div>
-                      <h3>Nivara Wealth Insights</h3>
+                      <h3>FinTech_WM Insights</h3>
                       <p class="muted">AI-generated portfolio alerts</p>
                     </div>
                   </div>
@@ -102,7 +115,7 @@
                       </svg>
                     </span>
                     <div>
-                      <h3>Nivara Wealth Suggestions</h3>
+                      <h3>FinTech_WM Suggestions</h3>
                       <p class="muted">Decision support, not execution</p>
                     </div>
                   </div>
@@ -174,11 +187,11 @@
                     <svg class="performance-chart" id="performanceChart" viewBox="0 0 640 200" preserveAspectRatio="none">
                       <defs>
                         <linearGradient id="performanceFill" x1="0" x2="0" y1="0" y2="1">
-                          <stop offset="0%" stop-color="#3a9c74" stop-opacity="0.25" />
-                          <stop offset="100%" stop-color="#3a9c74" stop-opacity="0" />
+                          <stop offset="0%" stop-color="#c7a35d" stop-opacity="0.22" />
+                          <stop offset="100%" stop-color="#c7a35d" stop-opacity="0" />
                         </linearGradient>
                       </defs>
-                      <path id="performanceLine" d="" stroke="#3a9c74" stroke-width="3" fill="none" />
+                      <path id="performanceLine" d="" stroke="#c7a35d" stroke-width="3" fill="none" />
                       <path id="performanceArea" d="" fill="url(#performanceFill)" />
                       <g id="performancePoints"></g>
                     </svg>
@@ -230,7 +243,14 @@
         <section id="watchlist" class="section">
           <div class="section-header">
             <div>
-              <h2>Watchlist</h2>
+              <h2>
+                <span class="section-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                    <path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z" />
+                  </svg>
+                </span>
+                Watchlist
+              </h2>
               <p class="muted">Track ideas and market momentum in real time</p>
             </div>
             <div class="watchlist-actions">
@@ -286,7 +306,7 @@
           </div>
           <div class="empty-state">
             <h4>No new alerts</h4>
-            <p class="muted">Nivara Wealth will surface portfolio-driven alerts as they emerge.</p>
+              <p class="muted">FinTech_WM will surface portfolio-driven alerts as they emerge.</p>
           </div>
         </div>
       </div>
@@ -312,7 +332,7 @@
             </div>
             <div class="detail-row">
               <span>Connected brokerage</span>
-              <span>Nivara Custody (Simulated)</span>
+              <span>FinTech_WM Custody (Simulated)</span>
             </div>
             <div class="detail-row">
               <span>Security</span>
