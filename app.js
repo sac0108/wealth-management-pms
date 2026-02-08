@@ -1,13 +1,14 @@
 const portfolioData = {
-  totalValue: 2485000,
-  todayChange: 32450,
+  totalValue: 24800000,
+  todayChange: 324500,
   todayChangePct: 1.32,
-  costBasis: 2134000,
-  unrealizedGains: 351000,
-  cashAvailable: 185000,
-  buyingPower: 370000,
+  costBasis: 21340000,
+  unrealizedGains: 3460000,
+  cashAvailable: 1850000,
+  buyingPower: 3700000,
   annualYield: 3.8,
   holdings: 14,
+  concentrationTop3: 42,
   trend: [2.22, 2.27, 2.24, 2.31, 2.36, 2.41, 2.48],
   allocation: [
     { sector: "Technology", value: 32 },
@@ -24,6 +25,53 @@ const portfolioData = {
     "1Y": { gain: 14.2, benchmark: 11.8, avgDaily: 0.12, bestDay: "Nov 18 +2.2%" },
     ALL: { gain: 38.5, benchmark: 31.4, avgDaily: 0.15, bestDay: "Jan 21 +2.8%" }
   },
+  performanceSeries: {
+    "7D": [
+      { date: "2026-07-29", value: 24200000 },
+      { date: "2026-07-30", value: 24320000 },
+      { date: "2026-07-31", value: 24240000 },
+      { date: "2026-08-01", value: 24480000 },
+      { date: "2026-08-02", value: 24560000 },
+      { date: "2026-08-03", value: 24720000 },
+      { date: "2026-08-04", value: 24800000 }
+    ],
+    "1M": [
+      { date: "2026-07-05", value: 23150000 },
+      { date: "2026-07-10", value: 23320000 },
+      { date: "2026-07-15", value: 23580000 },
+      { date: "2026-07-20", value: 23660000 },
+      { date: "2026-07-25", value: 24100000 },
+      { date: "2026-07-30", value: 24420000 },
+      { date: "2026-08-04", value: 24800000 }
+    ],
+    "3M": [
+      { date: "2026-05-10", value: 21450000 },
+      { date: "2026-05-30", value: 21880000 },
+      { date: "2026-06-18", value: 22350000 },
+      { date: "2026-07-02", value: 22840000 },
+      { date: "2026-07-18", value: 23590000 },
+      { date: "2026-07-30", value: 24380000 },
+      { date: "2026-08-04", value: 24800000 }
+    ],
+    "1Y": [
+      { date: "2025-09-15", value: 19800000 },
+      { date: "2025-11-18", value: 20550000 },
+      { date: "2026-01-08", value: 21120000 },
+      { date: "2026-03-22", value: 21900000 },
+      { date: "2026-05-30", value: 22800000 },
+      { date: "2026-07-30", value: 24380000 },
+      { date: "2026-08-04", value: 24800000 }
+    ],
+    ALL: [
+      { date: "2024-02-10", value: 16450000 },
+      { date: "2024-08-22", value: 17800000 },
+      { date: "2025-02-14", value: 19050000 },
+      { date: "2025-09-15", value: 19800000 },
+      { date: "2026-03-22", value: 21900000 },
+      { date: "2026-07-30", value: 24380000 },
+      { date: "2026-08-04", value: 24800000 }
+    ]
+  },
   risk: {
     score: 4.2,
     beta: 0.94,
@@ -31,10 +79,18 @@ const portfolioData = {
     sharpe: 1.32
   },
   events: [
-    { title: "Asterion Tech Q2 Earnings", date: "Aug 04", detail: "Expected EPS +12% YoY" },
-    { title: "GreenLeaf REIT Dividend", date: "Aug 12", detail: "$0.42 per share" },
-    { title: "Global rates decision", date: "Aug 18", detail: "Consensus hold at 5.25%" },
-    { title: "Helios Pharma FDA update", date: "Aug 24", detail: "Phase III milestone" }
+    {
+      title: "Asterion Tech Q2 Earnings",
+      date: "2026-08-04",
+      detail: "Expected EPS +12% YoY"
+    },
+    { title: "GreenLeaf REIT Dividend", date: "2026-08-12", detail: "₹34 per share" },
+    {
+      title: "Global rates decision",
+      date: "2026-08-18",
+      detail: "Consensus hold at 5.25%"
+    },
+    { title: "Helios Pharma FDA update", date: "2026-08-24", detail: "Phase III milestone" }
   ]
 };
 
@@ -163,16 +219,28 @@ const performanceCallout = document.getElementById("performanceCallout");
 const riskMetrics = document.getElementById("riskMetrics");
 const eventsContainer = document.getElementById("events");
 const watchlistGrid = document.getElementById("watchlistGrid");
-const trendLine = document.getElementById("trendLine");
-const trendArea = document.getElementById("trendArea");
 const portfolioHealth = document.getElementById("portfolioHealth");
 
-const formatCurrency = (value) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0
-  }).format(value);
+const formatCurrency = (value) => {
+  const absolute = Math.abs(value);
+  const sign = value < 0 ? "-" : "";
+  if (absolute >= 10000000) {
+    return `${sign}₹${(absolute / 10000000).toFixed(2)} Cr`;
+  }
+  if (absolute >= 100000) {
+    return `${sign}₹${(absolute / 100000).toFixed(1)} L`;
+  }
+  return `${sign}₹${new Intl.NumberFormat("en-IN").format(absolute)}`;
+};
+
+const formatDate = (iso) => {
+  const date = new Date(iso);
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+};
 
 const buildMetrics = () => {
   const metrics = [
@@ -185,8 +253,11 @@ const buildMetrics = () => {
     { label: "Cost Basis", value: formatCurrency(portfolioData.costBasis) },
     { label: "Unrealized Gains", value: formatCurrency(portfolioData.unrealizedGains) },
     { label: "Cash Available", value: formatCurrency(portfolioData.cashAvailable) },
-    { label: "Buying Power", value: formatCurrency(portfolioData.buyingPower) },
-    { label: "Annual Yield", value: `${portfolioData.annualYield}%` }
+    { label: "Annual Yield", value: `${portfolioData.annualYield}%` },
+    {
+      label: "Top 3 Concentration",
+      value: `${portfolioData.concentrationTop3}%`
+    }
   ];
 
   metricsContainer.innerHTML = metrics
@@ -197,67 +268,72 @@ const buildMetrics = () => {
     .join("");
 };
 
-const buildTrend = () => {
-  const values = portfolioData.trend;
-  const max = Math.max(...values);
-  const min = Math.min(...values);
-  const points = values.map((value, index) => {
-    const x = (index / (values.length - 1)) * 600;
-    const y = 160 - ((value - min) / (max - min)) * 120 - 20;
-    return `${x},${y}`;
-  });
-  const linePath = `M ${points.join(" L ")}`;
-  const areaPath = `${linePath} L 600 160 L 0 160 Z`;
-  trendLine.setAttribute("d", linePath);
-  trendArea.setAttribute("d", areaPath);
-};
-
 const buildSummary = () => {
   const concentration = portfolioData.allocation[0].value;
   const health = concentration > 35 ? "Needs Attention" : "Excellent";
   portfolioHealth.textContent = health;
-  const rebalanceLabel =
-    concentration > 30 ? "Trim Tech +4%" : "Weights on target";
+  const rebalanceStatus =
+    concentration > 30 ? "Needs Attention" : "Excellent";
   const rebalanceDetail =
     concentration > 30 ? "Tech above band" : "Within guardrails";
   const ytdDelta =
     portfolioData.performance["1Y"].gain - portfolioData.performance["1Y"].benchmark;
 
+  const statusClass = health === "Excellent" ? "positive" : "attention";
   summaryContent.innerHTML = `
-    <div class="summary-rows">
-      <div class="summary-row">
-        <div class="summary-icon">◎</div>
-        <div class="summary-text">
-          <span class="summary-label">Portfolio health</span>
-          <span class="summary-value">${portfolioData.allocation.length} core sectors</span>
+    <details class="summary-accordion">
+      <summary>
+        <div class="summary-overview">
+          <div class="overview-item">
+            <span class="muted">Portfolio health</span>
+            <strong>${health}</strong>
+          </div>
+          <div class="overview-item">
+            <span class="muted">YTD alpha</span>
+            <strong>+${ytdDelta.toFixed(1)}%</strong>
+          </div>
+          <div class="overview-item">
+            <span class="muted">Top 3 concentration</span>
+            <strong>${portfolioData.concentrationTop3}%</strong>
+          </div>
         </div>
-        <span class="summary-badge ${health === "Excellent" ? "positive" : ""}">${health}</span>
-      </div>
-      <div class="summary-row">
-        <div class="summary-icon">↔︎</div>
-        <div class="summary-text">
-          <span class="summary-label">Rebalancing</span>
-          <span class="summary-value">${rebalanceDetail}</span>
+        <span class="accordion-indicator">Expand</span>
+      </summary>
+      <div class="summary-detail">
+        <div class="summary-row">
+          <div class="summary-icon">◎</div>
+          <div class="summary-text">
+            <span class="summary-label">Portfolio health</span>
+            <span class="summary-value">${portfolioData.allocation.length} core sectors aligned</span>
+          </div>
+          <span class="summary-badge ${statusClass}">${health}</span>
         </div>
-        <span class="summary-badge">${rebalanceLabel}</span>
-      </div>
-      <div class="summary-row">
-        <div class="summary-icon">◐</div>
-        <div class="summary-text">
-          <span class="summary-label">Risk posture</span>
-          <span class="summary-value">Beta ${portfolioData.risk.beta} · Drawdown ${portfolioData.risk.drawdown}%</span>
+        <div class="summary-row">
+          <div class="summary-icon">↔︎</div>
+          <div class="summary-text">
+            <span class="summary-label">Rebalancing</span>
+            <span class="summary-value">${rebalanceDetail}</span>
+          </div>
+          <span class="summary-badge ${rebalanceStatus === "Needs Attention" ? "attention" : "positive"}">${rebalanceStatus}</span>
         </div>
-        <span class="summary-badge">Moderate</span>
-      </div>
-      <div class="summary-row">
-        <div class="summary-icon">▲</div>
-        <div class="summary-text">
-          <span class="summary-label">YTD performance</span>
-          <span class="summary-value">+${portfolioData.performance["1Y"].gain}% vs benchmark</span>
+        <div class="summary-row">
+          <div class="summary-icon">◐</div>
+          <div class="summary-text">
+            <span class="summary-label">Risk posture</span>
+            <span class="summary-value">Beta ${portfolioData.risk.beta} · Drawdown ${portfolioData.risk.drawdown}%</span>
+          </div>
+          <span class="summary-badge">Moderate</span>
         </div>
-        <span class="summary-badge positive">+${ytdDelta.toFixed(1)}% alpha</span>
+        <div class="summary-row">
+          <div class="summary-icon">▲</div>
+          <div class="summary-text">
+            <span class="summary-label">YTD performance</span>
+            <span class="summary-value">+${portfolioData.performance["1Y"].gain}% vs benchmark</span>
+          </div>
+          <span class="summary-badge positive">Excellent</span>
+        </div>
       </div>
-    </div>
+    </details>
   `;
 };
 
@@ -308,7 +384,7 @@ const buildAllocation = () => {
     }, [])
     .map((value) => (value / total) * 360);
 
-  const colors = ["#29c37c", "#5fb4ff", "#f1c15b", "#e48cc7", "#7b6dff", "#6ad1c9"];
+  const colors = ["#4f6b7a", "#6e7f8a", "#8a6f52", "#5f7366", "#79627e", "#6b7a6a"];
   const segments = gradientStops
     .map((stop, index) => `${colors[index]} 0 ${stop}deg`)
     .join(", ");
@@ -340,6 +416,72 @@ const buildPerformance = (range = "7D") => {
 
   performanceCallout.textContent =
     "Alpha generation remains consistent. Momentum is strongest in quality growth and defensive healthcare positions.";
+};
+
+const performanceChart = document.getElementById("performanceChart");
+const performanceLine = document.getElementById("performanceLine");
+const performanceArea = document.getElementById("performanceArea");
+const performancePoints = document.getElementById("performancePoints");
+const performanceTooltip = document.getElementById("performanceTooltip");
+
+const buildPerformanceChart = (range = "7D") => {
+  const series = portfolioData.performanceSeries[range];
+  if (!series || series.length === 0) {
+    return;
+  }
+  const values = series.map((item) => item.value);
+  const max = Math.max(...values);
+  const min = Math.min(...values);
+  const width = 640;
+  const height = 200;
+  const padding = 24;
+  const points = series.map((item, index) => {
+    const x = padding + (index / (series.length - 1)) * (width - padding * 2);
+    const y = height - padding - ((item.value - min) / (max - min)) * (height - padding * 2);
+    return { x, y, ...item };
+  });
+
+  const linePath = `M ${points.map((point) => `${point.x},${point.y}`).join(" L ")}`;
+  const areaPath = `${linePath} L ${width - padding} ${height - padding} L ${padding} ${height - padding} Z`;
+  performanceLine.setAttribute("d", linePath);
+  performanceArea.setAttribute("d", areaPath);
+
+  performancePoints.innerHTML = points
+    .map(
+      (point) =>
+        `<circle cx="${point.x}" cy="${point.y}" r="3" fill="#3a9c74" data-date="${point.date}" data-value="${point.value}" />`
+    )
+    .join("");
+
+  const showTooltip = (point, clientX, clientY) => {
+    const previousIndex = points.findIndex((item) => item.date === point.date) - 1;
+    const prevValue = previousIndex >= 0 ? points[previousIndex].value : point.value;
+    const change = point.value - prevValue;
+    const changeLabel = `${change >= 0 ? "+" : "-"}${formatCurrency(Math.abs(change))}`;
+    performanceTooltip.innerHTML = `
+      <div>${formatDate(point.date)}</div>
+      <div><strong>${formatCurrency(point.value)}</strong></div>
+      <div class="muted">Δ ${changeLabel}</div>
+    `;
+    const rect = performanceChart.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    performanceTooltip.style.left = `${x}px`;
+    performanceTooltip.style.top = `${y}px`;
+    performanceTooltip.style.opacity = 1;
+  };
+
+  performanceChart.onmousemove = (event) => {
+    const rect = performanceChart.getBoundingClientRect();
+    const relativeX = event.clientX - rect.left;
+    const index = Math.round(((relativeX - padding) / (width - padding * 2)) * (points.length - 1));
+    const clamped = Math.max(0, Math.min(points.length - 1, index));
+    showTooltip(points[clamped], event.clientX, event.clientY);
+  };
+
+  performanceChart.onmouseleave = () => {
+    performanceTooltip.style.opacity = 0;
+  };
 };
 
 const buildRisk = () => {
@@ -386,7 +528,25 @@ const buildEvents = () => {
       (event) => `
         <div class="event">
           <strong>${event.title}</strong>
-          <span class="muted">${event.date}</span>
+          <span class="event-date">
+            <svg class="date-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.6" aria-hidden="true">
+              <path d="M7 3v4M17 3v4M4 9h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z" />
+            </svg>
+            ${formatDate(event.date)}
+          </span>
+          <p class="muted">${event.detail}</p>
+        </div>
+      `
+    )
+    .join("");
+
+  const calendar = document.getElementById("eventsCalendar");
+  calendar.innerHTML = portfolioData.events
+    .map(
+      (event) => `
+        <div class="calendar-card">
+          <span>${formatDate(event.date)}</span>
+          <strong>${event.title}</strong>
           <p class="muted">${event.detail}</p>
         </div>
       `
@@ -495,7 +655,16 @@ filterButtons.forEach((button) => {
     filterButtons.forEach((item) => item.classList.remove("active"));
     button.classList.add("active");
     buildPerformance(button.dataset.range);
+    buildPerformanceChart(button.dataset.range);
   });
+});
+
+const viewCalendarBtn = document.getElementById("viewCalendar");
+const eventsCalendar = document.getElementById("eventsCalendar");
+viewCalendarBtn.addEventListener("click", () => {
+  const isActive = eventsCalendar.classList.toggle("active");
+  eventsContainer.classList.toggle("is-hidden", isActive);
+  viewCalendarBtn.textContent = isActive ? "View List" : "View Calendar";
 });
 
 const addWatchBtn = document.getElementById("addWatch");
@@ -505,12 +674,12 @@ addWatchBtn.addEventListener("click", () => {
 });
 
 buildMetrics();
-buildTrend();
 buildSummary();
 buildInsights();
 buildSuggestions();
 buildAllocation();
 buildPerformance();
+buildPerformanceChart();
 buildRisk();
 buildEvents();
 buildWatchlist();
