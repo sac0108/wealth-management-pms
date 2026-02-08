@@ -73,24 +73,39 @@ const portfolioData = {
     ]
   },
   risk: {
-    score: 4.2,
-    beta: 0.94,
-    drawdown: -9.6,
-    sharpe: 1.32
+    xirr: 16.8,
+    irr: 14.2,
+    sharpe: 1.21,
+    maxDrawdown: -8.4,
+    volatility: 12.6,
+    alpha: 2.3
   },
   events: [
     {
-      title: "Asterion Tech Q2 Earnings",
-      date: "2026-08-04",
-      detail: "Expected EPS +12% YoY"
+      title: "Union Budget presentation",
+      date: "2026-02-01",
+      detail: "Policy signals for capex, taxes, and incentives"
     },
-    { title: "GreenLeaf REIT Dividend", date: "2026-08-12", detail: "₹34 per share" },
     {
-      title: "Global rates decision",
-      date: "2026-08-18",
-      detail: "Consensus hold at 5.25%"
+      title: "RBI Monetary Policy Committee",
+      date: "2026-02-07",
+      detail: "Rate stance and liquidity commentary"
     },
-    { title: "Helios Pharma FDA update", date: "2026-08-24", detail: "Phase III milestone" }
+    {
+      title: "Q2 earnings season opens",
+      date: "2026-10-15",
+      detail: "Large-cap IT and banks lead reporting"
+    },
+    {
+      title: "India CPI inflation release",
+      date: "2026-09-12",
+      detail: "Headline and core CPI in focus"
+    },
+    {
+      title: "India GDP data release",
+      date: "2026-11-30",
+      detail: "Q2 GDP growth print for FY26"
+    }
   ]
 };
 
@@ -99,21 +114,21 @@ const insightsData = [
     title: "Growth opportunity detected",
     impact: "High",
     detail:
-      "Large-cap tech allocation is outperforming benchmarks by 2.1%. Consider incremental exposure to AI infrastructure themes.",
+      "Large-cap tech allocation led by TCS and Infosys is outperforming the NIFTY 50 by 2.1%. Consider incremental exposure to quality IT services.",
     action: "View details"
   },
   {
     title: "Rebalancing needed",
     impact: "Medium",
     detail:
-      "Single-stock concentration in Asterion Tech has reached 18% of total portfolio value, above the 12% target band.",
+      "Single-stock concentration in Reliance Industries is at 18% of total portfolio value, above the 12% target band.",
     action: "View details"
   },
   {
     title: "Tax-loss harvesting window",
     impact: "Low",
     detail:
-      "Two positions are down more than 8% from cost basis. Harvesting could offset $12.4k in gains.",
+      "Persistent Systems and Laxmi Organic are down more than 8% from cost basis. Harvesting could offset ₹9.8L in gains.",
     action: "View details"
   }
 ];
@@ -121,25 +136,25 @@ const insightsData = [
 const suggestionsData = [
   {
     type: "BUY",
-    asset: "Orion Cloud ETF",
-    price: "$112.40",
-    movement: "+1.4%",
+    asset: "Trent",
+    price: "₹5,420",
+    movement: "+2.1%",
     horizon: "6-12M",
     risk: "Moderate"
   },
   {
     type: "TRIM",
-    asset: "Asterion Tech",
-    price: "$328.15",
-    movement: "+3.2%",
+    asset: "Infosys",
+    price: "₹1,845",
+    movement: "+1.6%",
     horizon: "Immediate",
     risk: "Elevated"
   },
   {
     type: "WATCH",
-    asset: "Helios Pharma",
-    price: "$71.90",
-    movement: "-0.6%",
+    asset: "KPIT Technologies",
+    price: "₹1,790",
+    movement: "-0.4%",
     horizon: "3-6M",
     risk: "Balanced"
   }
@@ -147,50 +162,50 @@ const suggestionsData = [
 
 const watchlistData = [
   {
-    name: "Asterion Tech",
-    price: "$328.15",
-    change: "+3.2%",
-    high: "$333.40",
-    low: "$318.90",
-    volume: "5.4M",
-    cap: "$612B"
-  },
-  {
-    name: "Lumen Bank",
-    price: "$84.50",
-    change: "+0.8%",
-    high: "$86.10",
-    low: "$83.20",
-    volume: "3.1M",
-    cap: "$148B"
-  },
-  {
-    name: "Helios Pharma",
-    price: "$71.90",
-    change: "-0.6%",
-    high: "$72.80",
-    low: "$70.20",
-    volume: "2.6M",
-    cap: "$52B"
-  },
-  {
-    name: "GreenLeaf REIT",
-    price: "$44.70",
+    name: "Reliance Industries",
+    price: "₹2,965",
     change: "+1.1%",
-    high: "$45.20",
-    low: "$43.50",
-    volume: "1.2M",
-    cap: "$22B"
+    high: "₹2,992",
+    low: "₹2,910",
+    volume: "5.4M",
+    cap: "₹20.1 L Cr"
+  },
+  {
+    name: "HDFC Bank",
+    price: "₹1,610",
+    change: "+0.5%",
+    high: "₹1,628",
+    low: "₹1,592",
+    volume: "3.1M",
+    cap: "₹12.3 L Cr"
+  },
+  {
+    name: "Tata Elxsi",
+    price: "₹7,820",
+    change: "-0.8%",
+    high: "₹7,950",
+    low: "₹7,740",
+    volume: "1.1M",
+    cap: "₹49,200 Cr"
+  },
+  {
+    name: "Dixon Technologies",
+    price: "₹9,640",
+    change: "+0.9%",
+    high: "₹9,720",
+    low: "₹9,480",
+    volume: "0.6M",
+    cap: "₹58,800 Cr"
   }
 ];
 
 const assistantTemplates = {
   portfolio:
-    "Your portfolio is anchored by growth equities (54%) with balanced allocations to healthcare and financials. The largest single-stock exposure is Asterion Tech at 18%, which is driving recent outperformance. Consider trimming 2-3% to reduce concentration while keeping AI infrastructure exposure.",
+    "Your portfolio is anchored by growth equities (54%) with balanced allocations to healthcare and financials. The largest single-stock exposure is Reliance Industries at 18%, which is driving recent outperformance. Consider trimming 2-3% to reduce concentration while keeping core large-cap exposure.",
   market:
-    "Markets are rewarding quality growth and cash-flow resilience. AI infrastructure, cloud security, and selective healthcare innovators are leading sector rotation. Financials are stabilizing as rates plateau, while energy remains range-bound with modest upside tied to geopolitical supply risks.",
+    "Markets are rewarding quality growth and cash-flow resilience. IT services and premium consumer names are leading rotation, while private banks are stabilizing as rate expectations settle. Energy remains range-bound with modest upside tied to global crude trends.",
   risk:
-    "Overall risk posture is moderate. A beta of 0.94 means the portfolio moves slightly less than the market. Max drawdown of 9.6% indicates controlled downside, while a Sharpe ratio of 1.32 suggests healthy risk-adjusted returns. Stress scenarios show resilience unless tech volatility spikes further."
+    "Overall risk posture is moderate. XIRR of 16.8% reflects healthy SIP compounding, while max drawdown of 8.4% indicates controlled downside. Sharpe at 1.21 suggests efficient risk-adjusted returns, with mild volatility from mid-cap exposure."
 };
 
 const navButtons = document.querySelectorAll(".top-nav button");
@@ -297,14 +312,18 @@ const buildSummary = () => {
             <strong>${portfolioData.concentrationTop3}%</strong>
           </div>
         </div>
-        <span class="accordion-indicator">Expand</span>
+        <span class="accordion-indicator" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </span>
       </summary>
       <div class="summary-detail">
         <div class="summary-row">
           <div class="summary-icon">◎</div>
           <div class="summary-text">
-            <span class="summary-label">Portfolio health</span>
-            <span class="summary-value">${portfolioData.allocation.length} core sectors aligned</span>
+            <span class="summary-label">Key holdings</span>
+            <span class="summary-value">Reliance Industries · HDFC Bank · TCS</span>
           </div>
           <span class="summary-badge ${statusClass}">${health}</span>
         </div>
@@ -320,7 +339,7 @@ const buildSummary = () => {
           <div class="summary-icon">◐</div>
           <div class="summary-text">
             <span class="summary-label">Risk posture</span>
-            <span class="summary-value">Beta ${portfolioData.risk.beta} · Drawdown ${portfolioData.risk.drawdown}%</span>
+            <span class="summary-value">XIRR ${portfolioData.risk.xirr}% · Max drawdown ${Math.abs(portfolioData.risk.maxDrawdown)}%</span>
           </div>
           <span class="summary-badge">Moderate</span>
         </div>
@@ -402,7 +421,7 @@ const buildAllocation = () => {
     .join("");
 
   allocationCallout.textContent =
-    "Diversification score: 8.4/10. Technology is the largest sleeve; trimming 3-4% improves balance without hurting growth exposure.";
+    "Diversification score: 8.4/10. Large-cap anchors like Reliance Industries and HDFC Bank keep balance while mid-cap IT adds growth.";
 };
 
 const buildPerformance = (range = "7D") => {
@@ -415,7 +434,7 @@ const buildPerformance = (range = "7D") => {
   `;
 
   performanceCallout.textContent =
-    "Alpha generation remains consistent. Momentum is strongest in quality growth and defensive healthcare positions.";
+    "Alpha remains consistent versus the NIFTY 50. Momentum is strongest in quality IT and premium consumption names.";
 };
 
 const performanceChart = document.getElementById("performanceChart");
@@ -488,24 +507,34 @@ const buildRisk = () => {
   const risk = portfolioData.risk;
   const riskItems = [
     {
-      label: "Risk Score",
-      value: `${risk.score}/10`,
-      explanation: "Balances volatility, drawdown, and diversification."
+      label: "XIRR",
+      value: `${risk.xirr}%`,
+      explanation: "Shows SIP and irregular cash-flow returns in one number."
     },
     {
-      label: "Beta",
-      value: risk.beta,
-      explanation: "Below 1.0 indicates lower sensitivity to market moves."
+      label: "IRR",
+      value: `${risk.irr}%`,
+      explanation: "Portfolio-level internal return across all holdings."
     },
     {
       label: "Max Drawdown",
-      value: `${risk.drawdown}%`,
-      explanation: "Largest peak-to-trough decline during stress." 
+      value: `${risk.maxDrawdown}%`,
+      explanation: "Worst peak-to-trough dip seen in the period."
     },
     {
       label: "Sharpe Ratio",
       value: risk.sharpe,
-      explanation: "Risk-adjusted return; higher is more efficient."
+      explanation: "Shows how efficiently returns compensate for risk."
+    },
+    {
+      label: "Volatility (Std Dev)",
+      value: `${risk.volatility}%`,
+      explanation: "Measures typical month-to-month return swings."
+    },
+    {
+      label: "Alpha vs NIFTY 50",
+      value: `+${risk.alpha}%`,
+      explanation: "Excess return delivered above the benchmark."
     }
   ];
 
@@ -608,7 +637,7 @@ sendChat.addEventListener("click", () => {
   }
   appendChat(chatInput.value, "user");
   appendChat(
-    "Your weekly dip came from a 2.4% pullback in Asterion Tech and a slight rise in cash holdings. The rest of the portfolio remained stable, so the move was concentrated rather than systemic.",
+    "Your weekly dip came from a 2.4% pullback in Reliance Industries and a slight rise in cash holdings. The rest of the portfolio remained stable, so the move was concentrated rather than systemic.",
     "ai"
   );
   chatInput.value = "";
@@ -669,8 +698,8 @@ viewCalendarBtn.addEventListener("click", () => {
 
 const addWatchBtn = document.getElementById("addWatch");
 addWatchBtn.addEventListener("click", () => {
-  appendChat("Add Orion Cloud to watchlist", "user");
-  appendChat("Orion Cloud added. It currently trades at $112.40 with +1.4% momentum.", "ai");
+  appendChat("Add Route Mobile to watchlist", "user");
+  appendChat("Route Mobile added. It currently trades at ₹1,790 with +1.4% momentum.", "ai");
 });
 
 buildMetrics();
