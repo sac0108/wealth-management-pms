@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Finora | Wealth Management Prototype</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="auth" id="auth">
+      <div class="auth-card">
+        <div class="brand">
+          <div class="logo">F</div>
+          <div>
+            <h1>Finora</h1>
+            <p>Premium AI wealth management</p>
+          </div>
+        </div>
+        <h2>Sign in</h2>
+        <p class="muted">Use any email to access the prototype.</p>
+        <label>
+          Email address
+          <input type="email" id="emailInput" placeholder="you@finora.com" />
+        </label>
+        <button id="loginBtn" class="primary">Continue to dashboard</button>
+        <p class="hint">No password required · Demo environment</p>
+      </div>
+    </div>
+
+    <div class="app hidden" id="app">
+      <header class="top-bar">
+        <div class="brand">
+          <div class="logo">F</div>
+          <div class="brand-text">
+            <span class="brand-name">Finora</span>
+            <span class="brand-tag">Wealth OS</span>
+          </div>
+        </div>
+        <div class="search">
+          <input type="text" placeholder="Ask AI or search holdings…" />
+        </div>
+        <nav class="top-nav">
+          <button class="ghost" data-section="dashboard">Smart Dashboard</button>
+          <button class="ghost" data-section="watchlist">Watchlist</button>
+          <button class="ghost" data-section="assistant">Assistant</button>
+        </nav>
+        <div class="icons">
+          <button class="icon" id="exportBtn" title="Export">⇩</button>
+          <button class="icon" id="notifyBtn" title="Notifications">🔔</button>
+          <button class="icon" id="profileBtn" title="Profile">👤</button>
+        </div>
+      </header>
+
+      <main>
+        <section id="dashboard" class="section active">
+          <div class="grid hero">
+            <div class="card hero-card">
+              <div class="card-header">
+                <div>
+                  <h2>Portfolio Overview</h2>
+                  <p class="muted">Updated moments ago · Base currency USD</p>
+                </div>
+                <div class="pill" id="portfolioHealth">Excellent</div>
+              </div>
+              <div class="metrics" id="portfolioMetrics"></div>
+              <div class="chart-block">
+                <div>
+                  <h3>7-day performance</h3>
+                  <p class="muted">Net portfolio value trend</p>
+                </div>
+                <svg class="trend" viewBox="0 0 600 160" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="trendFill" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="#4bd49d" stop-opacity="0.35" />
+                      <stop offset="100%" stop-color="#4bd49d" stop-opacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <path id="trendLine" d="" stroke="#4bd49d" stroke-width="4" fill="none" />
+                  <path id="trendArea" d="" fill="url(#trendFill)" />
+                </svg>
+              </div>
+            </div>
+
+            <div class="stack">
+              <div class="card summary-card">
+                <div class="card-header">
+                  <div>
+                    <h3>Finora Summary</h3>
+                    <p class="muted">AI narrative from your latest data</p>
+                  </div>
+                  <button class="link" id="analysisBtn">View Detailed Analysis</button>
+                </div>
+                <div id="summaryContent"></div>
+              </div>
+              <div class="card insights-card">
+                <div class="card-header">
+                  <div>
+                    <h3>Finora Insights</h3>
+                    <p class="muted">AI-generated portfolio alerts</p>
+                  </div>
+                </div>
+                <div class="insights" id="insights"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid suggestions">
+            <div class="card">
+              <div class="card-header">
+                <h3>Finora Suggestions</h3>
+                <p class="muted">Decision support, not execution</p>
+              </div>
+              <div class="suggestion-list" id="suggestions"></div>
+            </div>
+          </div>
+
+          <div class="grid analytics">
+            <div class="card">
+              <div class="card-header">
+                <h3>Asset Allocation</h3>
+                <p class="muted">Sector exposure and diversification</p>
+              </div>
+              <div class="allocation">
+                <div class="donut" id="allocationDonut"></div>
+                <div class="allocation-details" id="allocationDetails"></div>
+              </div>
+              <div class="callout" id="allocationCallout"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Performance</h3>
+                <div class="filters" id="performanceFilters">
+                  <button class="filter active" data-range="7D">7D</button>
+                  <button class="filter" data-range="1M">1M</button>
+                  <button class="filter" data-range="3M">3M</button>
+                  <button class="filter" data-range="1Y">1Y</button>
+                  <button class="filter" data-range="ALL">ALL</button>
+                </div>
+              </div>
+              <div class="performance" id="performanceStats"></div>
+              <div class="callout" id="performanceCallout"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Risk Analysis</h3>
+                <p class="muted">Interpretation of portfolio risk metrics</p>
+              </div>
+              <div class="risk" id="riskMetrics"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Upcoming Events</h3>
+                <p class="muted">Earnings, dividends, and macro catalysts</p>
+              </div>
+              <div class="events" id="events"></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="watchlist" class="section">
+          <div class="section-header">
+            <div>
+              <h2>Watchlist</h2>
+              <p class="muted">Track ideas and market momentum in real time</p>
+            </div>
+            <div class="watchlist-actions">
+              <input id="watchlistSearch" type="text" placeholder="Search stocks" />
+              <button class="primary" id="addWatch">Add stock</button>
+            </div>
+          </div>
+          <div class="watchlist-grid" id="watchlistGrid"></div>
+        </section>
+
+        <section id="assistant" class="section">
+          <div class="assistant-hero">
+            <h2>Your AI-powered investment companion</h2>
+            <p class="muted">
+              Ask anything about your portfolio, risk, or market outlook.
+            </p>
+            <div class="assistant-actions">
+              <button class="secondary" data-action="portfolio">Analyze my portfolio</button>
+              <button class="secondary" data-action="market">Market insights</button>
+              <button class="secondary" data-action="risk">Risk assessment</button>
+            </div>
+          </div>
+          <div class="assistant-chat">
+            <div class="chat-window" id="chatWindow"></div>
+            <div class="chat-input">
+              <input type="text" id="chatInput" placeholder="Why did my returns dip this week?" />
+              <button class="primary" id="sendChat">Send</button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <div class="modal" id="exportModal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h3>Export Portfolio Report</h3>
+            <button class="icon" data-close="exportModal">✕</button>
+          </div>
+          <p class="muted">Choose a format for your report.</p>
+          <div class="modal-actions">
+            <button class="secondary">PDF · Executive Summary</button>
+            <button class="secondary">CSV · Tabular Data</button>
+            <button class="secondary">JSON · Raw Structured</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal" id="notifyModal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h3>Notification Center</h3>
+            <button class="icon" data-close="notifyModal">✕</button>
+          </div>
+          <div class="empty-state">
+            <h4>No new alerts</h4>
+            <p class="muted">Finora will surface portfolio-driven alerts as they emerge.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal" id="profileModal">
+        <div class="modal-card profile">
+          <div class="modal-header">
+            <h3>User Profile</h3>
+            <button class="icon" data-close="profileModal">✕</button>
+          </div>
+          <div class="tabs">
+            <button class="tab active" data-tab="profile">Profile</button>
+            <button class="tab" data-tab="settings">Settings</button>
+            <button class="tab" data-tab="preferences">Preferences</button>
+          </div>
+          <div class="tab-content active" id="tab-profile">
+            <div class="profile-grid">
+              <div>
+                <h4>Priya Nair</h4>
+                <p class="muted">Private client · Premium tier</p>
+              </div>
+              <div class="badge">Premium</div>
+            </div>
+            <div class="detail-row">
+              <span>Connected brokerage</span>
+              <span>Finora Custody (Simulated)</span>
+            </div>
+            <div class="detail-row">
+              <span>Security</span>
+              <span>2FA Enabled</span>
+            </div>
+          </div>
+          <div class="tab-content" id="tab-settings">
+            <div class="detail-row">
+              <span>Dark mode</span>
+              <label class="switch">
+                <input type="checkbox" />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="detail-row">
+              <span>Language</span>
+              <select>
+                <option>English</option>
+                <option>Hindi</option>
+                <option>Spanish</option>
+              </select>
+            </div>
+          </div>
+          <div class="tab-content" id="tab-preferences">
+            <div class="detail-row">
+              <span>Notifications</span>
+              <span>Email + In-app</span>
+            </div>
+            <div class="detail-row">
+              <span>Communication</span>
+              <span>Monthly insights</span>
+            </div>
+            <button class="secondary">Sign out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
