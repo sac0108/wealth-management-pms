@@ -64,25 +64,29 @@ p {
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+}
+
+.brand-mark {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
 }
 
 .logo {
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   display: grid;
   place-items: center;
-  background: rgba(199, 163, 93, 0.15);
+  background: transparent;
   color: var(--accent);
-  border: 1px solid rgba(199, 163, 93, 0.6);
+  border: 1.5px solid rgba(199, 163, 93, 0.8);
+  font-weight: 600;
+  letter-spacing: 0.08em;
 }
 
-.logo svg {
-  width: 26px;
-  height: 26px;
-  stroke: currentColor;
-  fill: currentColor;
+.logo.monogram {
+  font-size: 0.95rem;
 }
 
 .auth-card label {
@@ -171,15 +175,6 @@ button.link {
   border-bottom: 1px solid rgba(199, 163, 93, 0.2);
 }
 
-.brand-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.brand-name {
-  font-weight: 700;
-}
-
 .brand-tag {
   font-size: 0.75rem;
   color: rgba(246, 240, 232, 0.65);
@@ -199,6 +194,10 @@ button.link {
 .top-nav {
   display: flex;
   gap: 16px;
+}
+
+.top-nav .nav-icon {
+  color: var(--accent);
 }
 
 .icons {
@@ -668,16 +667,22 @@ main {
 
 .risk {
   display: grid;
-  gap: 12px;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .risk-item {
-  border: 1px solid rgba(199, 163, 93, 0.32);
-  border-radius: 14px;
-  padding: 12px;
+  border: 1px solid rgba(199, 163, 93, 0.28);
+  border-radius: 12px;
+  padding: 10px 12px;
   background: #fbf8f2;
   position: relative;
   overflow: hidden;
+  display: grid;
+  gap: 4px;
 }
 
 .risk-tooltip {
@@ -701,6 +706,10 @@ main {
 .events {
   display: grid;
   gap: 10px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .events.is-hidden {
@@ -1017,10 +1026,21 @@ main {
   display: none;
   gap: 10px;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .calendar-view.active {
   display: grid;
+}
+
+.analytics .risk-card,
+.analytics .events-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 360px;
 }
 
 .calendar-card {

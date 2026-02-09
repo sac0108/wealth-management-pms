@@ -16,15 +16,8 @@
     <div class="app" id="app">
       <header class="top-bar">
         <div class="brand">
-          <div class="logo" aria-hidden="true">
-            <svg viewBox="0 0 48 48" role="img">
-              <path d="M8 10h32v28H8z" fill="none" stroke-width="2.5" />
-              <path d="M16 32l8-16 8 16" stroke-width="3" fill="none" />
-              <circle cx="24" cy="16" r="2.8" />
-            </svg>
-          </div>
-          <div class="brand-text">
-            <span class="brand-name">Vedant Wealth Partners</span>
+          <div class="brand-mark" aria-hidden="true">
+            <div class="logo monogram">AA</div>
             <span class="brand-tag">FinTech_WM</span>
           </div>
         </div>
@@ -32,7 +25,14 @@
           <input type="text" placeholder="Ask AI or search holdings…" />
         </div>
         <nav class="top-nav">
-          <button class="ghost active" data-section="dashboard">Smart Dashboard</button>
+          <button class="ghost active" data-section="dashboard">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                <path d="M4 4h6v6H4zM14 4h6v10h-6zM4 14h6v6H4zM14 18h6" />
+              </svg>
+            </span>
+            Smart Dashboard
+          </button>
           <button class="ghost" data-section="watchlist">
             <span class="nav-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
@@ -41,7 +41,15 @@
             </span>
             Watchlist
           </button>
-          <button class="ghost" data-section="assistant">Assistant</button>
+          <button class="ghost" data-section="assistant">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                <path d="M12 3l2.2 4.4L19 9l-4.8 1.6L12 15l-2.2-4.4L5 9l4.8-1.6L12 3z" />
+                <circle cx="12" cy="18" r="2.2" />
+              </svg>
+            </span>
+            Assistant
+          </button>
         </nav>
         <div class="icons">
           <button class="icon" id="exportBtn" title="Export">⇩</button>
@@ -139,7 +147,7 @@
                 </div>
               </div>
               <div class="grid analytics">
-                <div class="card">
+                <div class="card risk-card">
                   <div class="card-header">
                     <div class="header-title">
                       <span class="card-icon" aria-hidden="true">
@@ -161,7 +169,7 @@
                   <div class="callout" id="allocationCallout"></div>
                 </div>
 
-                <div class="card">
+                <div class="card events-card">
                   <div class="card-header">
                     <div class="header-title">
                       <span class="card-icon" aria-hidden="true">
